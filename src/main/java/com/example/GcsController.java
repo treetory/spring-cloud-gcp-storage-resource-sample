@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 
@@ -225,12 +226,17 @@ public class GcsController {
     }
 
     @GetMapping("/url")
-    public ResponseEntity<?> getSignedURL(@RequestParam String fileName) throws IOException {
+    public ResponseEntity<?> getSignedURL(@RequestParam String fileName) throws IOException, URISyntaxException {
 
         URL signedURL = gcsService.getSignedURL(fileName);
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setLocation(signedURL.toURI());
+
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(signedURL);
+                .status(HttpStatus.TEMPORARY_REDIRECT)
+                .headers(httpHeaders)
+                .build();
     }
 
     @GetMapping("/{fileName}/download")
