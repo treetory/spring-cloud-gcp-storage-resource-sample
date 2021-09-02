@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -27,6 +28,12 @@ public class GcsService {
 
     @Value("${gcs-resource-test-bucket}")
     private String bucketName;
+
+    @PostConstruct
+    public void initialize() {
+        String bName = System.getenv().get("GOOGLE_APPLICATION_CREDENTIALS");
+        LOG.info("{}", bName);
+    }
 
     public BlobInfo uploadFileToGCS(MultipartFile file) throws IOException {
         BlobId blobId = BlobId.of(this.bucketName, file.getOriginalFilename());
@@ -102,13 +109,13 @@ public class GcsService {
             blobs = this.storage.list(
                     this.bucketName,
                     Storage.BlobListOption.pageSize(rowCount),
-                    Storage.BlobListOption.currentDirectory(),
+                    //Storage.BlobListOption.currentDirectory(),
                     Storage.BlobListOption.pageToken(pageToken)
             );
         } else {
             blobs = this.storage.list(
                     this.bucketName,
-                    Storage.BlobListOption.pageSize(rowCount),
+                    //Storage.BlobListOption.pageSize(rowCount),
                     Storage.BlobListOption.currentDirectory()
             );
         }

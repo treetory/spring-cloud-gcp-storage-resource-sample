@@ -129,8 +129,8 @@ public class GcsSampleApplicationIntegrationTests {
 	public void testGcsResourcesRetrieveByPaging() {
 		Page<Blob> blobs1 = this.storage.list(
 				this.bucketName,
-				Storage.BlobListOption.pageSize(100),
-				Storage.BlobListOption.currentDirectory()
+				Storage.BlobListOption.pageSize(100)
+				//Storage.BlobListOption.currentDirectory()
 		);
 		for (Iterator<Blob> ir = blobs1.getValues().iterator(); ir.hasNext();) {
 			Blob blob = ir.next();
@@ -160,10 +160,10 @@ public class GcsSampleApplicationIntegrationTests {
 	public void testGcsResourcesRetrieveOne() {
 		Awaitility.await().atMost(15, TimeUnit.SECONDS)
 			.untilAsserted(() -> {
-				String fileName = /*"my-a-file.txt"*/"clipboardImage_21_0702_113845_579.jpeg";
+				String fileName = /*"my-a-file.txt"*/"ANALYSIS_FILES/1357_HE18-035-0758028-LHT_final.bam.tdf";
 				BlobId blobId = BlobId.of(this.bucketName, fileName);
 				Blob blob = this.storage.get(blobId);
-				LOG.info(">>>> {}", blob.getName());
+				LOG.info(">>>> {} > {} > {}", this.bucketName, blob.getName());
 				assertThat(blob.getName()).isEqualTo(fileName);
 			});
 	}
