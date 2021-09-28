@@ -111,11 +111,14 @@ public class GcsSampleApplicationIntegrationTests {
 	 */
 	@Test
 	public void testGcsResourcesRetrieveAll() {
-		Page<Blob> blobs = this.storage.list(this.bucketName);
+		Page<Blob> blobs = this.storage.list(
+				this.bucketName,
+				Storage.BlobListOption.prefix("ANALYSIS_FILES/")
+		);
 		List<Blob> blobList = new LinkedList<>();
 		for (Blob blob : blobs.iterateAll()) {
 			LOG.info("{}",
-					String.format("%s -> %s", blob.getBlobId().toGsUtilUri(), blob.getName())
+					String.format("%s", blob.getName())
 			);
 			blobList.add(blob);
 		}
@@ -129,7 +132,8 @@ public class GcsSampleApplicationIntegrationTests {
 	public void testGcsResourcesRetrieveByPaging() {
 		Page<Blob> blobs1 = this.storage.list(
 				this.bucketName,
-				Storage.BlobListOption.pageSize(100)
+				Storage.BlobListOption.pageSize(100),
+				Storage.BlobListOption.prefix("ANALYSIS_FILES/")
 				//Storage.BlobListOption.currentDirectory()
 		);
 		for (Iterator<Blob> ir = blobs1.getValues().iterator(); ir.hasNext();) {
@@ -138,19 +142,20 @@ public class GcsSampleApplicationIntegrationTests {
 		}
 		NEXT_PAGE_TOKEN = blobs1.getNextPageToken();
 
-//		while(blobs1.hasNextPage()) {
-//			blobs1 = this.storage.list(
-//					this.bucketName,
-//					Storage.BlobListOption.pageSize(100),
+		while(blobs1.hasNextPage()) {
+			blobs1 = this.storage.list(
+					this.bucketName,
+					Storage.BlobListOption.pageSize(100),
 //					Storage.BlobListOption.currentDirectory(),
-//					Storage.BlobListOption.pageToken(NEXT_PAGE_TOKEN)
-//			);
-//			for (Iterator<Blob> ir = blobs1.getValues().iterator(); ir.hasNext();) {
-//				Blob blob = ir.next();
-//				LOG.info("{}", blob.getName());
-//			}
-//			NEXT_PAGE_TOKEN = blobs1.getNextPageToken();
-//		}
+					Storage.BlobListOption.prefix("ANALYSIS_FILES/"),
+					Storage.BlobListOption.pageToken(NEXT_PAGE_TOKEN)
+			);
+			for (Iterator<Blob> ir = blobs1.getValues().iterator(); ir.hasNext();) {
+				Blob blob = ir.next();
+				LOG.info("{}", blob.getName());
+			}
+			NEXT_PAGE_TOKEN = blobs1.getNextPageToken();
+		}
 	}
 
 	/**
@@ -160,10 +165,10 @@ public class GcsSampleApplicationIntegrationTests {
 	public void testGcsResourcesRetrieveOne() {
 		Awaitility.await().atMost(15, TimeUnit.SECONDS)
 			.untilAsserted(() -> {
-				String fileName = /*"my-a-file.txt"*/"ANALYSIS_FILES/1357_HE18-035-0758028-LHT_final.bam.tdf";
+				String fileName = /*"my-a-file.txt"*//*"ANALYSIS_FILES/1357_HE18-035-0758028-LHT_final.bam.tdf"*/"ANALYSIS_FILES/1589_HAL-SOLID-SAMPLE-05.pdf";
 				BlobId blobId = BlobId.of(this.bucketName, fileName);
 				Blob blob = this.storage.get(blobId);
-				LOG.info(">>>> {} > {} > {}", this.bucketName, blob.getName());
+				LOG.info(">>>> {} > {}", this.bucketName, blob.getName());
 				assertThat(blob.getName()).isEqualTo(fileName);
 			});
 	}
