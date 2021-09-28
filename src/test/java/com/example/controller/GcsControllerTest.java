@@ -45,7 +45,8 @@ public class GcsControllerTest {
         MvcResult getResult = mockMvc
                 .perform(MockMvcRequestBuilders.get("/api/v1/gcs")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("fileName", "ANALYSIS_FILES/1357_HE18-035-0758028-LHT_final.bam.tdf")
+                        //.param("fileName", "ANALYSIS_FILES/1357_HE18-035-0758028-LHT_final.bam.tdf")
+                        .param("fileName", "ANALYSIS_FILES/1556_NA14623.pdf")
                 )
                 .andExpect(MockMvcResultMatchers.status().isTemporaryRedirect())
                 .andReturn();

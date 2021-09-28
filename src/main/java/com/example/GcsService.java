@@ -140,6 +140,12 @@ public class GcsService {
     public URL getSignedURL(String fileName) throws IOException {
         BlobId blobId = BlobId.of(this.bucketName, fileName);
 
+        Blob blob = this.storage.get((blobId));
+
+        if (blob == null) {
+            return null;
+        }
+
         return this.storage.signUrl(
                 BlobInfo.newBuilder(blobId).build(),
                 5*60,

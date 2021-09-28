@@ -14,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
@@ -240,6 +239,12 @@ public class GcsController {
     public ResponseEntity<?> getSignedURL2(@RequestParam String fileName) throws URISyntaxException, IOException {
 
         URL signedURL = gcsService.getSignedURL(fileName);
+
+        if (signedURL == null) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .build();
+        }
 
         LOG.info(">>>> {}", signedURL.toURI());
 
